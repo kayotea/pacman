@@ -128,74 +128,87 @@
                 return (Math.floor(Math.random()*10)%4+1);
             }
 
-            document.onkeydown = function(e){
-                if(e.keyCode == 37 && world[pac.y][pac.x-1] != 2){
+            // when user clicks an arrow key,
+            // the pacman continues to move in that direction
+            // as long as it doesn't hit a wall
+            var dir = 0;
+            setInterval(function(){
+                document.onkeydown = function(e){
+                    dir = e.keyCode
+                    console.log(dir);
+                }
+                if(dir == 37 && world[pac.y][pac.x-1] != 2){
                     pac.x --;
+                    displayPac();
                 }
-                else if (e.keyCode == 39 && world[pac.y][pac.x+1] != 2){
+                else if (dir == 39 && world[pac.y][pac.x+1] != 2){
                     pac.x ++;
+                    displayPac();
                 }
-                else if (e.keyCode == 38 && world[pac.y-1][pac.x] != 2){
+                else if (dir == 38 && world[pac.y-1][pac.x] != 2){
                     pac.y --;
+                    displayPac();
                 }
-                else if (e.keyCode == 40 && world[pac.y+1][pac.x] != 2){
+                else if (dir == 40 && world[pac.y+1][pac.x] != 2){
                     pac.y ++;
+                    displayPac();
                 }
                 if(world[pac.y][pac.x] == 1){
                     world[pac.y][pac.x] = 0;
                     displayWorld();
                     score += 10;
                     displayScore();
-                }
-                displayPac();
-                
-                console.log(e.keyCode);
-            }
-            var count = 0;
-            var move = randomDir();
-            setInterval(function(){
-                //console.log(randomStep());
-                if (count == 4){
-                    move = randomDir();
-                    count = 0;
-                }
-                console.log(move);
-                //for (var i = 0; i < 3; i++){
-                    if(move == 1){
-                        if (world[gho.y][gho.x-1] != 2){
-                            gho.x -= 1;
-                            count++;
-                        }else{
-                            move = 2;
-                        }
-                    }
-                    if (move == 2){
-                        if (world[gho.y][gho.x+1] != 2){
-                            gho.x += 1;
-                            count++;
-                        }else{
-                            move = 3;
-                        }
-                    }
-                    if (move == 3){
-                        if(world[gho.y-1][gho.x] != 2){
-                            gho.y -= 1;
-                            count++;
-                        }else{
-                            move = 4;
-                        }
-                    }
-                    if (move == 4){
-                        if (world[gho.y+1][gho.x] != 2){
-                            gho.y += 1;
-                            count++;
-                        }else{
-                            count++;
-                        }
-                    }
-                    displayGho();
-                //}
+                }                
+                console.log(dir);
             }, 150);
+            var step = 0;
+            var move = 1;
+            var count = 0;
+            setInterval(function(){
+                // changing direction
+                if (step == 0){
+                    // change potential direction of move
+                        move = randomDir();
+                    
+                }
+                // if we can move in that direction, make it move
+                if (move == 1){
+                    if(world[gho.y][gho.x-1] != 2){
+                        gho.x -= 1;
+                        step++;
+                    }else{
+                        move = randomDir();
+                    }
+                }
+                if (move == 2){
+                    if (world[gho.y][gho.x+1] != 2){
+                        gho.x += 1;
+                        step++;
+                    }else{
+                        move = randomDir();
+                    }
+                }
+                if (move == 3){
+                    if(world[gho.y-1][gho.x] != 2){
+                        gho.y -= 1;
+                        step++;
+                    }else{
+                        move = randomDir();
+                    }
+                }
+                if (move == 4){
+                    if(world[gho.y+1][gho.x] != 2){
+                        gho.y += 1;
+                        step++;
+                    }else{
+                        move = randomDir();
+                    }
+                }
+                if (step == 3){
+                    step = 0;
+                }
+                displayGho();
+            }, 200);
         </script>
 
     </body>
