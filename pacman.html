@@ -1,0 +1,202 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <title>Pacman Demo</title>
+        <style type="text/css">
+            body{
+                background-color: black; 
+                margin: 0px;
+            }
+            div.row div{
+                width: 20px;
+                height: 20px;
+                display: inline-block;
+                vertical-align: top;
+            }
+            div.brick{
+                background-color: blue;
+            }
+            div.coin{
+                background: url('coin.gif');
+                background-repeat: no-repeat;
+                background-position: center; 
+            }
+            div#pacman{
+                background: url('pacman.gif');
+                background-size: cover;
+                background-repeat: no-repeat;
+                width: 20px;
+                height: 20px;
+                position: absolute; 
+            }
+            div#ghost{
+                background: url('ghost.gif');
+                background-size: cover;
+                background-repeat: no-repeat;
+                width: 20px;
+                height: 20px;
+                position: absolute; 
+            }
+            div#score{
+                border: 1px solid white;
+                width: 30px;
+                height: 30px;
+                color: white;
+                text-align: center;
+                padding: 7px;
+                margin-top: 10px; 
+            }
+        </style>
+    </head>
+    <body>
+            <div id="container">
+                <div id="world"></div>
+                <div id="pacman"></div>
+                <div id="ghost"></div>
+                <div id="score">0</div>
+            </div>
+
+        <!--List of features
+        1) have JS display the world of brick/coin/etc.
+        2) hav pacman move up and down-->
+
+        <script>
+
+            var world = [
+                [2,2,2,2,2,2,2,2,2,2],
+                [2,1,1,1,1,1,1,2,1,2],
+                [2,1,1,1,1,2,1,2,1,2],
+                [2,1,1,1,1,2,1,1,1,2],
+                [2,1,1,1,1,2,1,1,1,2],
+                [2,1,1,1,1,2,1,2,1,2],
+                [2,1,1,1,1,1,1,2,1,2],
+                [2,2,2,2,2,2,2,2,2,2]
+            ];
+
+            var score = 0;
+            var pac = {
+                x: 1,
+                y: 1
+            };
+            var gho = {
+                x: 1,
+                y: 6
+            }
+
+            function displayWorld(){
+                var output = '';
+                for (var i = 0; i < world.length; i++){
+                    output += "<div class='row'>";
+                    for (var j = 0; j < world[i].length; j++){
+                        if (world[i][j] == 2){
+                            output += "<div class='brick'></div>";
+                        }
+                        else if (world[i][j] == 1){
+                            output += "<div class='coin'></div>";
+                        }
+                        else if (world[i][j] == 0){
+                            output += "<div class='empty'></div>";
+                        }
+                        //output = output+world[i][j];
+                    }
+                    output += "</div>";
+                }
+                //console.log(output);
+                document.getElementById('world').innerHTML = output;
+            }
+            function displayPac(){
+                document.getElementById('pacman').style.left = pac.x*20+"px";
+                document.getElementById('pacman').style.top = pac.y*20 +"px";
+            }
+            function displayGho(){
+                document.getElementById('ghost').style.left = gho.x*20+"px";
+                document.getElementById('ghost').style.top = gho.y*20 +"px";
+            }
+            function displayScore (){
+                document.getElementById('score').innerHTML = score;
+            }
+            displayWorld();
+            displayPac();
+            displayGho();
+            
+            // returns either 0 or 1 randomly
+            // function randomStep(){
+            //     return (Math.floor(Math.random()*2)%2);
+            // }
+            //returns integer 1 - 4 randomly
+            function randomDir(){
+                return (Math.floor(Math.random()*10)%4+1);
+            }
+
+            document.onkeydown = function(e){
+                if(e.keyCode == 37 && world[pac.y][pac.x-1] != 2){
+                    pac.x --;
+                }
+                else if (e.keyCode == 39 && world[pac.y][pac.x+1] != 2){
+                    pac.x ++;
+                }
+                else if (e.keyCode == 38 && world[pac.y-1][pac.x] != 2){
+                    pac.y --;
+                }
+                else if (e.keyCode == 40 && world[pac.y+1][pac.x] != 2){
+                    pac.y ++;
+                }
+                if(world[pac.y][pac.x] == 1){
+                    world[pac.y][pac.x] = 0;
+                    displayWorld();
+                    score += 10;
+                    displayScore();
+                }
+                displayPac();
+                
+                console.log(e.keyCode);
+            }
+            var count = 0;
+            var move = randomDir();
+            setInterval(function(){
+                //console.log(randomStep());
+                if (count == 4){
+                    move = randomDir();
+                    count = 0;
+                }
+                console.log(move);
+                //for (var i = 0; i < 3; i++){
+                    if(move == 1){
+                        if (world[gho.y][gho.x-1] != 2){
+                            gho.x -= 1;
+                            count++;
+                        }else{
+                            move = 2;
+                        }
+                    }
+                    if (move == 2){
+                        if (world[gho.y][gho.x+1] != 2){
+                            gho.x += 1;
+                            count++;
+                        }else{
+                            move = 3;
+                        }
+                    }
+                    if (move == 3){
+                        if(world[gho.y-1][gho.x] != 2){
+                            gho.y -= 1;
+                            count++;
+                        }else{
+                            move = 4;
+                        }
+                    }
+                    if (move == 4){
+                        if (world[gho.y+1][gho.x] != 2){
+                            gho.y += 1;
+                            count++;
+                        }else{
+                            count++;
+                        }
+                    }
+                    displayGho();
+                //}
+            }, 150);
+        </script>
+
+    </body>
+</html>
