@@ -115,6 +115,26 @@
             function displayScore (){
                 document.getElementById('score').innerHTML = score;
             }
+            // returns true if pacman is within 2 horizontal or vertical spaces
+            // of the ghost
+            function isPacNear(){
+                if (world[gho.x][gho.y+1] == world[pac.x][pac.y] || world[gho.x][gho.y+2] == world[pac.x][pac.y]){
+                    console.log("true");
+                    return true;
+                }else if(world[gho.x][gho.y-1] == world[pac.x][pac.y] || world[gho.x][gho.y-2] == world[pac.x][pac.y]){
+                    console.log("true");
+                    return true;
+                }else if(world[gho.x+1][gho.y] == world[pac.x][pac.y] || world[gho.x+2][gho.y] == world[pac.x][pac.y]){
+                    console.lot("true");
+                    return true;
+                }else if(world[gho.x-1][gho.y] == world[pac.x][pac.y] || world[gho.x-2][gho.y] == world[pac.x][pac.y]){
+                    console.log("true");
+                    return true;
+                }else{
+                    console.log("false");
+                    return false;
+                }
+            }
             displayWorld();
             displayPac();
             displayGho();
@@ -161,17 +181,20 @@
                 }                
                 console.log(dir);
             }, 150);
+
             var step = 0;
             var move = 1;
             var count = 0;
+            // controls movement of ghost
             setInterval(function(){
-                // changing direction
+                // if ghost takes 3 steps in a row, change direction
                 if (step == 0){
                     // change potential direction of move
-                        move = randomDir();
-                    
+                    move = randomDir(); 
                 }
                 // if we can move in that direction, make it move
+                // if we can't move in that direction,
+                // change the movement direction
                 if (move == 1){
                     if(world[gho.y][gho.x-1] != 2){
                         gho.x -= 1;
@@ -208,6 +231,7 @@
                     step = 0;
                 }
                 displayGho();
+                isPacNear();
             }, 200);
         </script>
 
