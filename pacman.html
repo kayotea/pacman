@@ -2,6 +2,7 @@
 <html>
     <head>
         <title>Pacman Demo</title>
+        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
         <style type="text/css">
             body{
                 background-color: black; 
@@ -21,13 +22,30 @@
                 background-repeat: no-repeat;
                 background-position: center; 
             }
+            div.cherry{
+                background: url('cherry.png');
+                background-repeat: no-repeat;
+                background-position: center;
+                background-size: cover;
+            }
             div#pacman{
-                background: url('pacman.gif');
                 background-size: cover;
                 background-repeat: no-repeat;
                 width: 20px;
                 height: 20px;
                 position: absolute; 
+            }
+            div.right{
+                background-image: url('pacman right.gif');
+            }
+            div.left{
+                background-image: url('pacman left.gif');
+            }
+            div.up{
+                background-image: url('pacman up.gif');
+            }
+            div.down{
+                background-image: url('pacman down.gif');
             }
             div#ghost{
                 background: url('ghost.gif');
@@ -43,235 +61,279 @@
                 height: 30px;
                 color: white;
                 text-align: center;
+                display: inline-block;
+                vertical-align: top;
                 padding: 7px;
                 margin-top: 10px; 
+            }
+            div#life{
+                border: 1px solid white;
+                width: 30px;
+                height: 30px;
+                color: white;
+                text-align: center;
+                display: inline-block;
+                vertical-align: top;
+                padding: 7px;
+                margin-top: 10px; 
+            }
+            p{
+                margin: 3px;
             }
         </style>
     </head>
     <body>
             <div id="container">
                 <div id="world"></div>
-                <div id="pacman"></div>
+                <div id="pacman" class="right"></div>
                 <div id="ghost"></div>
                 <div id="score">0</div>
+                <div id="life">1<p>life</p></div>
             </div>
 
         <!--List of features
         1) have JS display the world of brick/coin/etc.
         2) hav pacman move up and down-->
 
-        <script>
+        <script type = "text/javascript">
+            $(document).ready(function(){
+                var world = [
+                    [2,2,2,2,2,2,2,2,2,2,2,2,2,2,2],
+                    [2,1,1,1,1,1,1,2,1,1,1,1,1,1,2],
+                    [2,1,1,1,1,2,1,2,1,2,1,1,1,1,2],
+                    [2,1,1,1,1,2,1,3,1,2,1,1,1,1,2],
+                    [2,1,1,1,1,2,1,1,1,2,1,1,1,1,2],
+                    [2,1,1,1,1,2,1,2,1,2,1,1,1,1,2],
+                    [2,3,1,1,1,1,1,2,1,1,1,1,1,3,2],
+                    [2,2,2,2,2,2,2,2,2,2,2,2,2,2,2]
+                ];
 
-            var world = [
-                [2,2,2,2,2,2,2,2,2,2],
-                [2,1,1,1,1,1,1,2,1,2],
-                [2,1,1,1,1,2,1,2,1,2],
-                [2,1,1,1,1,2,1,1,1,2],
-                [2,1,1,1,1,2,1,1,1,2],
-                [2,1,1,1,1,2,1,2,1,2],
-                [2,1,1,1,1,1,1,2,1,2],
-                [2,2,2,2,2,2,2,2,2,2]
-            ];
+                var score = 0;
+                var life = 1;
+                var pac = {
+                    x: 1,
+                    y: 1
+                };
+                var gho = {
+                    x: 1,
+                    y: 6
+                }
 
-            var score = 0;
-            var pac = {
-                x: 1,
-                y: 1
-            };
-            var gho = {
-                x: 1,
-                y: 6
-            }
-
-            function displayWorld(){
-                var output = '';
-                for (var i = 0; i < world.length; i++){
-                    output += "<div class='row'>";
-                    for (var j = 0; j < world[i].length; j++){
-                        if (world[i][j] == 2){
-                            output += "<div class='brick'></div>";
+                function displayWorld(){
+                    var output = '';
+                    for (var i = 0; i < world.length; i++){
+                        output += "<div class='row'>";
+                        for (var j = 0; j < world[i].length; j++){
+                            if (world[i][j] == 2){
+                                output += "<div class='brick'></div>";
+                            }
+                            else if (world[i][j] == 1){
+                                output += "<div class='coin'></div>";
+                            }
+                            else if (world[i][j] == 0){
+                                output += "<div class='empty'></div>";
+                            }else if(world[i][j] == 3){
+                                output += "<div class='cherry'></div>"
+                            }
                         }
-                        else if (world[i][j] == 1){
-                            output += "<div class='coin'></div>";
-                        }
-                        else if (world[i][j] == 0){
-                            output += "<div class='empty'></div>";
-                        }
-                        //output = output+world[i][j];
+                        output += "</div>";
                     }
-                    output += "</div>";
+                    //console.log(output);
+                    document.getElementById('world').innerHTML = output;
                 }
-                //console.log(output);
-                document.getElementById('world').innerHTML = output;
-            }
-            function displayPac(){
-                document.getElementById('pacman').style.left = pac.x*20+"px";
-                document.getElementById('pacman').style.top = pac.y*20 +"px";
-            }
-            function displayGho(){
-                document.getElementById('ghost').style.left = gho.x*20+"px";
-                document.getElementById('ghost').style.top = gho.y*20 +"px";
-            }
-            function displayScore (){
-                document.getElementById('score').innerHTML = score;
-            }
+                function displayPac(){
+                    document.getElementById('pacman').style.left = pac.x*20+"px";
+                    document.getElementById('pacman').style.top = pac.y*20 +"px";
+                }
+                function displayGho(){
+                    document.getElementById('ghost').style.left = gho.x*20+"px";
+                    document.getElementById('ghost').style.top = gho.y*20 +"px";
+                }
+                function displayScore (){
+                    document.getElementById('score').innerHTML = score;
+                }
+                function displayLife(){
+                    document.getElementById('life').innerHTML = life;
+                }
 
-            // return true if pacman is within 2 horizontal or vertical spaces of  ghost
-            // but not on top of ghost
-            // else return false
-            function isPacNear(){
-                // check if pacman is nearby ghost in y direction
-                if (gho.y+1 == pac.y && gho.x == pac.x){
-                    console.log("true1");
-                    return true;
-                }else if (gho.y+2 == pac.y && gho.x == pac.x){
-                    console.log("true2");
-                    return true;
-                }else if (gho.y-1 == pac.y && gho.x == pac.x){
-                    console.log("true3");
-                    return true;
-                }else if (gho.y-2 == pac.y && gho.x == pac.x){
-                    console.log("true4");
-                    return true;
+                // return true if pacman is within 2 horizontal or vertical spaces of  ghost
+                // but not on top of ghost
+                // else return false
+                function isPacNear(){
+                    // check if pacman is nearby ghost in y direction
+                    if (gho.y+1 == pac.y && gho.x == pac.x){
+                        console.log("true1");
+                        return true;
+                    }else if (gho.y+2 == pac.y && gho.x == pac.x){
+                        console.log("true2");
+                        return true;
+                    }else if (gho.y-1 == pac.y && gho.x == pac.x){
+                        console.log("true3");
+                        return true;
+                    }else if (gho.y-2 == pac.y && gho.x == pac.x){
+                        console.log("true4");
+                        return true;
+                    }
+                    // check if pacman is nearby ghost in x direction
+                    else if (gho.y == pac.y && gho.x+1 == pac.x){
+                        console.log("true5");
+                        return true;
+                    }else if (gho.y == pac.y && gho.x-1 == pac.x){
+                        console.log("true6");
+                        return true;
+                    }else if (gho.y == pac.y && gho.x+2 == pac.x){
+                        console.log("true7");
+                        return true;
+                    }else if (gho.y == pac.y && gho.x-2 == pac.x){
+                        console.log("true8");
+                        return true;
+                    }else{
+                        console.log("false");
+                        return false;
+                    }
                 }
-                // check if pacman is nearby ghost in x direction
-                else if (gho.y == pac.y && gho.x+1 == pac.x){
-                    console.log("true5");
-                    return true;
-                }else if (gho.y == pac.y && gho.x-1 == pac.x){
-                    console.log("true6");
-                    return true;
-                }else if (gho.y == pac.y && gho.x+2 == pac.x){
-                    console.log("true7");
-                    return true;
-                }else if (gho.y == pac.y && gho.x-2 == pac.x){
-                    console.log("true8");
-                    return true;
-                }else{
-                    console.log("false");
-                    return false;
+                displayWorld();
+                displayPac();
+                displayGho();
+                
+                //returns integer between  1 - 4 randomly
+                function randomDir(){
+                    return (Math.floor(Math.random()*10)%4+1);
                 }
-            }
-            displayWorld();
-            displayPac();
-            displayGho();
-            
-            //returns integer between  1 - 4 randomly
-            function randomDir(){
-                return (Math.floor(Math.random()*10)%4+1);
-            }
 
-            // when user clicks an arrow key,
-            // the pacman continues to move in that direction
-            // as long as it doesn't hit a wall
-            var dir = 0;
-            setInterval(function(){
+                // when user clicks an arrow key,
+                // the pacman continues to move in that direction
+                // as long as it doesn't hit a wall
+                var dir = 0;
                 document.onkeydown = function(e){
                     dir = e.keyCode
+                    if (e.keyCode == 37){
+                            $('#pacman').css('background-image', 'url("pacman left.gif")');  
+                        }else if (e.keyCode == 39){
+                            $('#pacman').css('background-image', 'url("pacman right.gif")');
+                        }else if (e.keyCode == 38){
+                            $('#pacman').css('background-image', 'url("pacman up.gif")');  
+                        }else if (e.keyCode == 40){
+                            $('#pacman').css('background-image', 'url("pacman down.gif")'); 
+                        }
+                }
+                // pacman motion
+                setInterval(function(){
+                    if(pac.x == gho.x && pac.y == gho.y){
+                        life = 0;
+                        displayLife();
+                    }
+                    if(dir == 37 && world[pac.y][pac.x-1] != 2){                      
+                        pac.x --;
+                        displayPac();
+                    }else if (dir == 39 && world[pac.y][pac.x+1] != 2){
+                        //$('#pacman').addClass('right');
+                        pac.html
+                        pac.x ++;
+                        displayPac();
+                    }else if (dir == 38 && world[pac.y-1][pac.x] != 2){                      
+                        pac.y --;
+                        displayPac();
+                    }else if (dir == 40 && world[pac.y+1][pac.x] != 2){                       
+                        pac.y ++;
+                        displayPac();
+                    }
+                    // update score: 10pt for coin, 50pt for cherry
+                    if(world[pac.y][pac.x] == 1){
+                        world[pac.y][pac.x] = 0;
+                        displayWorld();
+                        score += 10;
+                        displayScore();
+                    }else if (world[pac.y][pac.x] == 3){
+                        world[pac.y][pac.x] = 0;
+                        displayWorld();
+                        score += 50;
+                        displayScore();
+                    }             
                     console.log(dir);
-                }
-                if(dir == 37 && world[pac.y][pac.x-1] != 2){
-                    pac.x --;
-                    displayPac();
-                }
-                else if (dir == 39 && world[pac.y][pac.x+1] != 2){
-                    pac.x ++;
-                    displayPac();
-                }
-                else if (dir == 38 && world[pac.y-1][pac.x] != 2){
-                    pac.y --;
-                    displayPac();
-                }
-                else if (dir == 40 && world[pac.y+1][pac.x] != 2){
-                    pac.y ++;
-                    displayPac();
-                }
-                if(world[pac.y][pac.x] == 1){
-                    world[pac.y][pac.x] = 0;
-                    displayWorld();
-                    score += 10;
-                    displayScore();
-                }                
-                console.log(dir);
-            }, 500);
+                }, 500);
 
-            var step = 0;
-            var move = 1;
-            var count = 0;
-            // controls movement of ghost
-            setInterval(function(){
-                // NEED TO FIX THIS
-                // movement when pacman is nearby
-                if(isPacNear()){
-                    // move towards pacman in x direction
-                    if(gho.x < pac.x && world[gho.x+1][gho.y] != 2){
-                        gho.x += 1;
-                    }else if(gho.x > pac.x && world[gho.x-1][gho.y] != 2){
-                        gho.x -= 1;
-                    }
-                    // move towards pacman in y direction
-                    else if(gho.y < pac.y && world[gho.x][gho.y+1] != 2){
-                        gho.y += 1;
-                    }else if(gho.y > pac.y && world[gho.x][gho.y-1] != 2){
-                        gho.y -= 1;
-                    }
-                    displayGho();
-                // movement when pacman not nearby:
-                // ghost is wandering around 
-                }else{
-                    console.log("hello");
-                    // if ghost takes 3 steps in a row, change direction
-                    if (step == 0){
-                        // change potential direction of move
-                        move = randomDir(); 
-                    }
-                    // if we can move in that direction, make ghost move
-                    // if we can't move in that direction,
-                    // change the movement direction
-                    if (move == 1){
-                        if(world[gho.y][gho.x-1] != 2){
-                            gho.x -= 1;
-                            step++;
-                        }else{
-                            move = randomDir();
-                        }
-                    }
-                    if (move == 2){
-                        if (world[gho.y][gho.x+1] != 2){
+                var step = 0;
+                var move = 1;
+                var count = 0;
+                // ghost motion
+                setInterval(function(){
+                    // movement when pacman is nearby
+                    if(isPacNear()){
+                        // move towards pacman in x direction
+                        // FIX: SOMETIMES CAUSES UNDEFINED ERROR
+                        // POSSIBLY WHEN world[gho.x+1][gho.y]
+                        // IS OUTSIDE OF SCOPE
+                        // ((USE UNDEFINED CHECK?))
+                        if(gho.x < pac.x && world[gho.x+1][gho.y] != 2){
                             gho.x += 1;
-                            step++;
-                        }else{
-                            move = randomDir();
+                        }else if(gho.x > pac.x && world[gho.x-1][gho.y] != 2){
+                            gho.x -= 1;
                         }
-                    }
-                    if (move == 3){
-                        if(world[gho.y-1][gho.x] != 2){
-                            gho.y -= 1;
-                            step++;
-                        }else{
-                            move = randomDir();
-                        }
-                    }
-                    if (move == 4){
-                        if(world[gho.y+1][gho.x] != 2){
+                        // move towards pacman in y direction
+                        else if(gho.y < pac.y && world[gho.x][gho.y+1] != 2){
                             gho.y += 1;
-                            step++;
-                        }else{
-                            move = randomDir();
+                        }else if(gho.y > pac.y && world[gho.x][gho.y-1] != 2){
+                            gho.y -= 1;
+                        }
+                        displayGho();
+                    // movement when pacman not nearby:
+                    // ghost is wandering around 
+                    }else{
+                        console.log("hello");
+                        // if ghost takes 3 steps in a row, change direction
+                        if (step == 0){
+                            // change potential direction of move
+                            move = randomDir(); 
+                        }
+                        // if we can move in that direction, make ghost move
+                        // if we can't move in that direction,
+                        // change the movement direction
+                        if (move == 1){
+                            if(world[gho.y][gho.x-1] != 2){
+                                gho.x -= 1;
+                                step++;
+                            }else{
+                                move = randomDir();
+                            }
+                        }
+                        if (move == 2){
+                            if (world[gho.y][gho.x+1] != 2){
+                                gho.x += 1;
+                                step++;
+                            }else{
+                                move = randomDir();
+                            }
+                        }
+                        if (move == 3){
+                            if(world[gho.y-1][gho.x] != 2){
+                                gho.y -= 1;
+                                step++;
+                            }else{
+                                move = randomDir();
+                            }
+                        }
+                        if (move == 4){
+                            if(world[gho.y+1][gho.x] != 2){
+                                gho.y += 1;
+                                step++;
+                            }else{
+                                move = randomDir();
+                            }
+                        }
+                        if (step == 3){
+                            step = 0;
                         }
                     }
-                    if (step == 3){
-                        step = 0;
-                    }
-                }
-                // console.log("ghostposition:");
-                // console.log(gho.x);
-                // console.log(gho.y);
-                // console.log("pacposition:")
-                // console.log(pac.x);
-                // console.log(pac.y);
-                displayGho();
-            }, 800);
+                    // console.log("ghostposition:");
+                    // console.log(gho.x);
+                    // console.log(gho.y);
+                    // console.log("pacposition:")
+                    // console.log(pac.x);
+                    // console.log(pac.y);
+                    displayGho();
+                }, 800);
+            });
         </script>
 
     </body>
