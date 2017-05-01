@@ -115,20 +115,37 @@
             function displayScore (){
                 document.getElementById('score').innerHTML = score;
             }
-            // returns true if pacman is within 2 horizontal or vertical spaces
-            // of the ghost
+
+            // return true if pacman is within 2 horizontal or vertical spaces of  ghost
+            // but not on top of ghost
+            // else return false
             function isPacNear(){
-                if (world[gho.x][gho.y+1] == world[pac.x][pac.y] || world[gho.x][gho.y+2] == world[pac.x][pac.y]){
-                    console.log("true");
+                // check if pacman is nearby ghost in y direction
+                if (gho.y+1 == pac.y && gho.x == pac.x){
+                    console.log("true1");
                     return true;
-                }else if(world[gho.x][gho.y-1] == world[pac.x][pac.y] || world[gho.x][gho.y-2] == world[pac.x][pac.y]){
-                    console.log("true");
+                }else if (gho.y+2 == pac.y && gho.x == pac.x){
+                    console.log("true2");
                     return true;
-                }else if(world[gho.x+1][gho.y] == world[pac.x][pac.y] || world[gho.x+2][gho.y] == world[pac.x][pac.y]){
-                    console.lot("true");
+                }else if (gho.y-1 == pac.y && gho.x == pac.x){
+                    console.log("true3");
                     return true;
-                }else if(world[gho.x-1][gho.y] == world[pac.x][pac.y] || world[gho.x-2][gho.y] == world[pac.x][pac.y]){
-                    console.log("true");
+                }else if (gho.y-2 == pac.y && gho.x == pac.x){
+                    console.log("true4");
+                    return true;
+                }
+                // check if pacman is nearby ghost in x direction
+                else if (gho.y == pac.y && gho.x+1 == pac.x){
+                    console.log("true5");
+                    return true;
+                }else if (gho.y == pac.y && gho.x-1 == pac.x){
+                    console.log("true6");
+                    return true;
+                }else if (gho.y == pac.y && gho.x+2 == pac.x){
+                    console.log("true7");
+                    return true;
+                }else if (gho.y == pac.y && gho.x-2 == pac.x){
+                    console.log("true8");
                     return true;
                 }else{
                     console.log("false");
@@ -139,11 +156,7 @@
             displayPac();
             displayGho();
             
-            // returns either 0 or 1 randomly
-            // function randomStep(){
-            //     return (Math.floor(Math.random()*2)%2);
-            // }
-            //returns integer 1 - 4 randomly
+            //returns integer between  1 - 4 randomly
             function randomDir(){
                 return (Math.floor(Math.random()*10)%4+1);
             }
@@ -180,59 +193,85 @@
                     displayScore();
                 }                
                 console.log(dir);
-            }, 150);
+            }, 500);
 
             var step = 0;
             var move = 1;
             var count = 0;
             // controls movement of ghost
             setInterval(function(){
-                // if ghost takes 3 steps in a row, change direction
-                if (step == 0){
-                    // change potential direction of move
-                    move = randomDir(); 
-                }
-                // if we can move in that direction, make it move
-                // if we can't move in that direction,
-                // change the movement direction
-                if (move == 1){
-                    if(world[gho.y][gho.x-1] != 2){
-                        gho.x -= 1;
-                        step++;
-                    }else{
-                        move = randomDir();
-                    }
-                }
-                if (move == 2){
-                    if (world[gho.y][gho.x+1] != 2){
+                // NEED TO FIX THIS
+                // movement when pacman is nearby
+                if(isPacNear()){
+                    // move towards pacman in x direction
+                    if(gho.x < pac.x && world[gho.x+1][gho.y] != 2){
                         gho.x += 1;
-                        step++;
-                    }else{
-                        move = randomDir();
+                    }else if(gho.x > pac.x && world[gho.x-1][gho.y] != 2){
+                        gho.x -= 1;
                     }
-                }
-                if (move == 3){
-                    if(world[gho.y-1][gho.x] != 2){
-                        gho.y -= 1;
-                        step++;
-                    }else{
-                        move = randomDir();
-                    }
-                }
-                if (move == 4){
-                    if(world[gho.y+1][gho.x] != 2){
+                    // move towards pacman in y direction
+                    else if(gho.y < pac.y && world[gho.x][gho.y+1] != 2){
                         gho.y += 1;
-                        step++;
-                    }else{
-                        move = randomDir();
+                    }else if(gho.y > pac.y && world[gho.x][gho.y-1] != 2){
+                        gho.y -= 1;
+                    }
+                    displayGho();
+                // movement when pacman not nearby:
+                // ghost is wandering around 
+                }else{
+                    console.log("hello");
+                    // if ghost takes 3 steps in a row, change direction
+                    if (step == 0){
+                        // change potential direction of move
+                        move = randomDir(); 
+                    }
+                    // if we can move in that direction, make ghost move
+                    // if we can't move in that direction,
+                    // change the movement direction
+                    if (move == 1){
+                        if(world[gho.y][gho.x-1] != 2){
+                            gho.x -= 1;
+                            step++;
+                        }else{
+                            move = randomDir();
+                        }
+                    }
+                    if (move == 2){
+                        if (world[gho.y][gho.x+1] != 2){
+                            gho.x += 1;
+                            step++;
+                        }else{
+                            move = randomDir();
+                        }
+                    }
+                    if (move == 3){
+                        if(world[gho.y-1][gho.x] != 2){
+                            gho.y -= 1;
+                            step++;
+                        }else{
+                            move = randomDir();
+                        }
+                    }
+                    if (move == 4){
+                        if(world[gho.y+1][gho.x] != 2){
+                            gho.y += 1;
+                            step++;
+                        }else{
+                            move = randomDir();
+                        }
+                    }
+                    if (step == 3){
+                        step = 0;
                     }
                 }
-                if (step == 3){
-                    step = 0;
-                }
+                // console.log("ghostposition:");
+                // console.log(gho.x);
+                // console.log(gho.y);
+                // console.log("pacposition:")
+                // console.log(pac.x);
+                // console.log(pac.y);
                 displayGho();
-                isPacNear();
-            }, 200);
+            }, 800);
         </script>
 
     </body>
